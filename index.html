@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 800px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 20px;
+        }
+        .school-info {
+            text-align: center;
+        }
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+            color: #2c3e50;
+        }
+        .year {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+        .search-box {
+            margin: 20px 0;
+        }
+        input {
+            padding: 10px 15px;
+            width: 300px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 30px;
+            display: none;
+        }
+        .student-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+            position: relative;
+        }
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+        }
+        .student-details {
+            flex: 2;
+        }
+        .qr-code {
+            flex: 1;
+            text-align: center;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .passed {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .failed {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .title {
+            color: #3498db;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/LOGO_KECIL_SMPN_1_RANCABUNGUR_4_CLEAR.png/250px-LOGO_KECIL_SMPN_1_RANCABUNGUR_4_CLEAR.png" alt="Logo Sekolah" class="logo">
+            <div class="school-info">
+                <h1 class="school-name">SMPN 1 RANCABUNGUR</h1>
+                <p class="year">Tahun Kelulusan: 2025</p>
+            </div>
+        </div>
+        
+        <h2 class="title">CEK STATUS KELULUSAN SISWA</h2>
+        
+        <div class="search-box">
+            <input type="text" id="nisnInput" placeholder="Masukkan NISN Siswa">
+            <button onclick="checkGraduation()">Cek Status</button>
+        </div>
+        
+        <div id="result" class="result">
+            <div class="student-card">
+                <div class="student-info">
+                    <div class="student-details">
+                        <h2 id="studentName"></h2>
+                        <p><strong>NISN:</strong> <span id="studentNISN"></span></p>
+                        <p><strong>Kelas:</strong> <span id="studentClass"></span></p>
+                        <p><strong>Status:</strong> <span id="studentStatus" class="status"></span></p>
+                    </div>
+                    <div class="qr-code">
+                        <img id="qrImage" src="" alt="QR Code" width="120" height="120">
+                        <p>Scan untuk verifikasi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database siswa
+        const students = [
+            { nisn: "1234567890", name: "Ahmad Fauzi", class: "9A", status: "Lulus" },
+            { nisn: "2345678901", name: "Budi Santoso", class: "9B", status: "Lulus" },
+            { nisn: "3456789012", name: "Citra Dewi", class: "9C", status: "Tidak Lulus" },
+            { nisn: "4567890123", name: "Dian Pratama", class: "9A", status: "Lulus" },
+            { nisn: "5678901234", name: "Eka Wulandari", class: "9B", status: "Lulus" }
+        ];
+
+        function checkGraduation() {
+            const nisn = document.getElementById('nisnInput').value;
+            const resultDiv = document.getElementById('result');
+            const student = students.find(s => s.nisn === nisn);
+            
+            if (student) {
+                document.getElementById('studentName').textContent = student.name;
+                document.getElementById('studentNISN').textContent = student.nisn;
+                document.getElementById('studentClass').textContent = student.class;
+                
+                const statusElement = document.getElementById('studentStatus');
+                statusElement.textContent = student.status;
+                statusElement.className = 'status ' + (student.status === 'Lulus' ? 'passed' : 'failed');
+                
+                // Generate QR code dengan data siswa
+                const qrData = `Nama: ${student.name}\nNISN: ${student.nisn}\nKelas: ${student.class}\nStatus: ${student.status}\nSekolah: SMPN 1 RANCABUNGUR\nTahun: 2025`;
+                document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+                
+                resultDiv.style.display = 'block';
+            } else {
+                alert('NISN tidak ditemukan. Silakan coba lagi.');
+                resultDiv.style.display = 'none';
+            }
+        }
+        
+        // Tambahkan event listener untuk tombol enter
+        document.getElementById('nisnInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGraduation();
+            }
+        });
+    </script>
+</body>
+</html>
